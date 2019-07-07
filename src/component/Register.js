@@ -104,15 +104,12 @@ const Register = (props) => {
     const [email, setEmail] = useState('');
     const [socket, setSocket] = useState('');
     const [user, setUser] = useState('');
-    const [chat, setChat] = useState('');
 
     const inputChangeHandler = (event) => {
         if (event.target.name === 'username') {
             setUsername(event.target.value);
-        } else if (event.target.name === 'email') {
-            setEmail(event.target.value);
         } else {
-            setChat(event.target.value);
+            setEmail(event.target.value);
         }
     }
 
@@ -127,6 +124,7 @@ const Register = (props) => {
                 email: email
             });
             socket.emit(USER_CONNECTED, user);
+            props.history.push("/dashboard");
         }
     }
 
@@ -192,20 +190,6 @@ const Register = (props) => {
                                         register();
                                     }}>
                                     Submit</Button>
-                                <br />
-                                <TextField
-                                    label="Message"
-                                    name="chat"
-                                    type="text"
-                                    variant="outlined"
-                                    className={classes.textField}
-                                    value={chat}
-                                    onChange={inputChangeHandler}
-                                />
-                                <br />
-                                <Button variant="outlined" color="primary" className={classes.button} onClick={() => {
-
-                                }}>Send</Button>
                             </div>
                         </div>
                     </Grid>
