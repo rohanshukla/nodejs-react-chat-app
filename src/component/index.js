@@ -1,19 +1,25 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, Component } from 'react';
 import Register from './Register';
 import Dashboard from './Dashboard';
 import Snackbar, { openSnackbar } from './utils/Snackbar';
 
 import io from 'socket.io-client';
-import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT } from '../Events';
+import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT, MESSAGE_RECEIVED } from '../Events';
 
-const SOCKET_URL = "localhost:5001";
+const SOCKET_URL = ":5001";
 
-const Index = (props) => {
+class Index extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            socket: null,
+            loggedIn: false,
+            chats: []
+        }
+        this.socket = io(SOCKET_URL);
+    }
 
-    const [socket, setSocket] = useState('');
-    const [loggedIn, setLogin] = useState(false);
-
-    const register = (username, email) => {
+    register = (username, email) => {
         if (username === '' || username === undefined || username === null) {
             openSnackbar({ message: "Please enter username", variant: "info" });
         } else if (email === '' || email === undefined || email === null) {
@@ -23,34 +29,44 @@ const Index = (props) => {
                 username: username,
                 email: email
             }
-            socket.emit(USER_CONNECTED, user);
-            setLogin(true);
+            this.socket.emit(USER_CONNECTED, user);
+            this.setState({
+                loggedIn: true
+            });
         }
     }
 
-    useEffect(() => {
-        initSocket();
-    }, []);
+    /* logout = () => {
+       socket.emit(LOGOUT);
+       setLogin(false);
+   } */
 
-    const initSocket = () => {
-        const socket = io(SOCKET_URL);
-        socket.on('connect', () => {
-            console.log(`Connected SocketId - ${socket.id}`);
+    initSocket = () => {
+        this.socket.on('connect', () => {
+            console.log(`Connected SocketId - ${this.socket.id}`);
         });
-        setSocket(socket);
+
+        this.socket.on(MESSAGE_RECEIVED, (data) => {
+            this.setState((prevState) => {
+                return {
+                    chats: [...prevState.chats, data]
+                }
+            });
+        });
     }
 
-    /* const logout = () => {
-        socket.emit(LOGOUT);
-        setLogin(false);
-    } */
+    componentDidMount() {
+        this.initSocket();
+    }
 
-    return (
-        <Fragment>
-            <Snackbar />
-            {loggedIn ? <Dashboard socket={socket} /> : <Register register={register} socket={socket} />}
-        </Fragment>
-    );
+    render() {
+        return (
+            <Fragment>
+                <Snackbar />
+                {this.state.loggedIn ? <Dashboard socket={this.socket} chats={this.state.chats} updateMessages={this.updateMessages} /> : <Register register={this.register} socket={this.state.socket} />}
+            </Fragment>
+        );
+    }
 }
 
 export default Index;

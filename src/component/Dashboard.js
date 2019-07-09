@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { useState, Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -7,54 +7,48 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Snackbar, { openSnackbar } from './utils/Snackbar';
 
-import io from 'socket.io-client';
-import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT, MESSAGE_SENT } from '../Events';
+import { MESSAGE_SENT } from '../Events';
 
-class Dashboard extends Component {
-    constructor(props) {
-        super(props);
+const Dashboard = (props) => {
 
-        this.state = {
-            message: "",
-            socket: null
-        }
-    }
-    onMessageSubmit = (e) => {
+    const [message, setMessage] = useState('');
+
+    const onMessageSubmit = (e) => {
         e.preventDefault();
-        this.props.socket.emit(MESSAGE_SENT, this.state.message);
+        props.socket.emit(MESSAGE_SENT, message);
+        setMessage("");
     }
 
-    onInpuFieldChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.value
-        });
-    }
+    return (
+        <Fragment>
+            <form onSubmit={onMessageSubmit}>
+                <TextField
+                    label="Message"
+                    name="message"
+                    type="text"
+                    variant="outlined"
+                    // className={classes.textField}
+                    value={message}
+                    onChange={(e) => {
+                        setMessage(e.target.value);
+                    }}
+                />
+                <br />
+                <Button type="submit" variant="outlined" color="secondary">Send</Button>
+            </form>
 
-    onMessageReceived = () => {
-        this.props.socket.emit(this.onMessageReceived, function (data) {
-            console.log(data);
-        });
-    }
-
-    render() {
-        return (
-            <Fragment>
-                <form onSubmit={this.onMessageSubmit}>
-                    <TextField
-                        label="Message"
-                        name="message"
-                        type="text"
-                        variant="outlined"
-                        // className={classes.textField}
-                        value={this.state.message}
-                        onChange={this.onInpuFieldChange}
-                    />
-                    <br />
-                    <Button type="submit" variant="outlined" color="secondary">Send</Button>
-                </form>
-            </Fragment>
-        )
-    }
+            {
+                props.chats.map((chat, index) => {
+                    return (
+                        <div key={index}>
+                            <p>{chat.message}</p>
+                            <p>{chat.user.username}</p>
+                        </div>
+                    )
+                })
+            }
+        </Fragment >
+    )
 }
 
 export default Dashboard;

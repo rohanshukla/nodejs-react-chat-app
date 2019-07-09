@@ -1,9 +1,9 @@
-var express = require('express');
+const express = require('express');
 const cors = require('cors');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
-const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED } = require('../src/Events');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED } = require('./src/Events');
 
 var users = [];
 var connections = [];
@@ -16,8 +16,8 @@ server.listen(PORT, () => {
 
 app.use(cors());
 
-app.get('/', function (require, res) {
-    res.sendFile(__dirname + '/index.html');
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/build/index.html');
 });
 
 io.sockets.on('connection', function (socket) {
@@ -36,6 +36,7 @@ io.sockets.on('connection', function (socket) {
     //send Message...
     socket.on(MESSAGE_SENT, function (message) {
         io.sockets.emit(MESSAGE_RECEIVED, { message: message, user: socket.user });
+        console.log({ message: message, user: socket.user });
     });
 
 
