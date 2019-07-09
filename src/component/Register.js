@@ -1,14 +1,10 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Snackbar, { openSnackbar } from './utils/Snackbar';
-
-import io from 'socket.io-client';
-import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT } from '../Events';
 
 
 const styles = theme => ({
@@ -97,13 +93,11 @@ const styles = theme => ({
     }
 });
 
-const SOCKET_URL = "localhost:5000";
+
 const Register = (props) => {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [socket, setSocket] = useState('');
-    const [user, setUser] = useState('');
 
     const inputChangeHandler = (event) => {
         if (event.target.name === 'username') {
@@ -113,50 +107,17 @@ const Register = (props) => {
         }
     }
 
-    const register = () => {
-        if (username === '') {
-            openSnackbar({ message: "Please enter username", variant: "info" });
-        } else if (email === '') {
-            openSnackbar({ message: "Please enter password", variant: "info" });
-        } else {
-            setUser({
-                username: username,
-                email: email
-            });
-            socket.emit(USER_CONNECTED, user);
-            props.history.push("/dashboard");
-        }
-    }
-
-    useEffect(() => {
-        initSocket();
-    }, []);
-
-    const initSocket = () => {
-        const socket = io(SOCKET_URL);
-        socket.on('connect', () => {
-            console.log("Connected");
-        });
-        setSocket(socket);
-    }
-
-    /* const logout = () => {
-        socket.emit(LOGOUT);
-        setUser('');
-    } */
-
     const { classes } = props;
     return (
         <Fragment>
             <section className={classes.root}>
-                <Snackbar />
                 <Grid container>
                     <Grid item xs={12} sm={12} lg={6}>
                         <div className={classes.leftContainer}>
                             <div>
                                 {/* <img src={} alt="Logo" className={classes.logoImage}></img> */}
                                 <Typography variant="h5">
-                                    <span className={classes.logoText}>Chat App</span>
+                                    {/* <span className={classes.logoText}>Chat App</span> */}
                                 </Typography>
                             </div>
                         </div>
@@ -164,7 +125,10 @@ const Register = (props) => {
                     <Grid item xs={12} sm={12} lg={6}>
                         <div className={classes.rightContainer}>
                             <Typography variant="h5" className={classes.headingText}>Register</Typography>
-                            <div>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                props.register(username, email);
+                            }}>
                                 <TextField
                                     label="Username"
                                     name="username"
@@ -178,19 +142,16 @@ const Register = (props) => {
                                 <TextField
                                     label="Email"
                                     name="email"
-                                    type="email"
+                                    type="text"
                                     variant="outlined"
                                     className={classes.textField}
                                     value={email}
                                     onChange={inputChangeHandler}
                                 />
                                 <br />
-                                <Button variant="outlined" color="secondary" className={classes.button}
-                                    onClick={() => {
-                                        register();
-                                    }}>
+                                <Button type="submit" variant="outlined" color="secondary" className={classes.button}>
                                     Submit</Button>
-                            </div>
+                            </form>
                         </div>
                     </Grid>
                 </Grid>

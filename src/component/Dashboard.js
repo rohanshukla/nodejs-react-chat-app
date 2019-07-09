@@ -8,24 +8,31 @@ import TextField from '@material-ui/core/TextField';
 import Snackbar, { openSnackbar } from './utils/Snackbar';
 
 import io from 'socket.io-client';
-import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT } from '../Events';
+import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT, MESSAGE_SENT } from '../Events';
 
 class Dashboard extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            message: ""
+            message: "",
+            socket: null
         }
     }
     onMessageSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state);
+        this.props.socket.emit(MESSAGE_SENT, this.state.message);
     }
 
     onInpuFieldChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
+        });
+    }
+
+    onMessageReceived = () => {
+        this.props.socket.emit(this.onMessageReceived, function (data) {
+            console.log(data);
         });
     }
 

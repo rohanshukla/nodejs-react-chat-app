@@ -8,7 +8,7 @@ const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED } = re
 var users = [];
 var connections = [];
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 server.listen(PORT, () => {
     console.log("Chat Server Started...");
@@ -34,15 +34,13 @@ io.sockets.on('connection', function (socket) {
 
 
     //send Message...
-    socket.on('send message', function (data) {
-        console.log(data);
-        io.sockets.emit('new message', { msg: data, user: socket.username });
+    socket.on(MESSAGE_SENT, function (message) {
+        io.sockets.emit(MESSAGE_RECEIVED, { message: message, user: socket.user });
     });
 
 
     //new user...
     socket.on(USER_CONNECTED, function (data) {
-        console.log(data);
         socket.user = data;
         users.push(socket.user);
         updateUsernames();
@@ -50,6 +48,7 @@ io.sockets.on('connection', function (socket) {
 
 
     function updateUsernames() {
-        io.sockets.emit('get users', users);
+        // io.sockets.emit('get users', users);
+        console.log(users);
     }
 });
