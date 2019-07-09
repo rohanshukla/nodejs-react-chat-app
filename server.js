@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const path = require('path');
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED } = require('./src/Events');
@@ -15,6 +16,7 @@ server.listen(PORT, () => {
 });
 
 app.use(cors());
+app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/build/index.html');
