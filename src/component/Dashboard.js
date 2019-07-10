@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -27,9 +27,16 @@ const styles = theme => ({
         margin: '5px',
         border: '1px #000000 solid'
     },
+    chatSection: {
+        display: 'flex'
+    },
     message: {
+        display: 'inline-block',
+        border: '1px solid #bcbab8',
+        borderRadius: '5px',
+        padding: '5px',
         fontSize: '16px',
-        margin: '5px 0',
+        margin: '5px',
         [theme.breakpoints.down('sm')]: {
             fontSize: '16px',
         },
@@ -72,16 +79,16 @@ const Dashboard = (props) => {
     return (
         <section className={classes.container}>
             <div className={classes.leftContainer}>
-                
+
             </div>
             <div className={classes.rightContainer}>
-                <Grid container>
+                <Grid container className={classes.chatSection}>
                     <Grid item xs={12}>
                         {
                             props.chats.map((chat, index) => {
                                 return (
                                     <div key={index}>
-                                        <Typography variant="body1" className={classes.message}>{`${chat.user.username} - ${chat.message}`}</Typography>
+                                        <Typography variant="body1" className={classes.message}>{`${chat.user.username} - ${chat.message}   `}<span>{new Date().getDate()}</span></Typography>
                                     </div>
                                 );
                             })

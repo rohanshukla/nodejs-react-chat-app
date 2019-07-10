@@ -63,7 +63,7 @@ class Index extends Component {
         return (
             <Fragment>
                 <Snackbar />
-                {!this.state.loggedIn ? <Dashboard socket={this.socket} chats={this.state.chats} updateMessages={this.updateMessages} /> : <Register register={this.register} socket={this.state.socket} />}
+                {this.state.loggedIn ? <Dashboard socket={this.socket} chats={this.state.chats} updateMessages={this.updateMessages} /> : <Register register={this.register} socket={this.state.socket} />}
             </Fragment>
         );
     }
