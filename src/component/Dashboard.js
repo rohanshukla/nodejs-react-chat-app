@@ -30,16 +30,39 @@ const styles = theme => ({
     chatSection: {
         display: 'flex'
     },
-    message: {
+    messageUser: {
+        margin: '0',
+        fontSize: '15px',
+        fontWeight: '700',
+        [theme.breakpoints.down('sm')]: {
+            fontSize: '14px',
+        },
+    },
+    messageReceived: {
         display: 'inline-block',
         border: '1px solid #bcbab8',
-        borderRadius: '5px',
-        padding: '5px',
-        fontSize: '16px',
-        margin: '5px',
+        borderRadius: '4px',
+        padding: '3px',
+        fontSize: '15px',
+        margin: '5px 25px 5px 5px',
         [theme.breakpoints.down('sm')]: {
-            fontSize: '16px',
+            fontSize: '14px',
         },
+    },
+    messageSent: {
+        display: 'inline-block',
+        border: '1px solid #bcbab8',
+        borderRadius: '4px',
+        padding: '3px',
+        fontSize: '15px',
+        margin: '5px 5px 5px 25px',
+        [theme.breakpoints.down('sm')]: {
+            fontSize: '14px',
+        },
+    },
+    messageTime: {
+        fontSize: '10px',
+        margin: '0 5px'
     },
     messageContainer: {
         display: 'flex',
@@ -88,7 +111,15 @@ const Dashboard = (props) => {
                             props.chats.map((chat, index) => {
                                 return (
                                     <div key={index}>
-                                        <Typography variant="body1" className={classes.message}>{`${chat.user.username} - ${chat.message}   `}<span>{new Date().getDate()}</span></Typography>
+                                        <span className={classes.messageSent}>
+                                            <Typography variant="body1" className={classes.messageUser}>{chat.user.username}</Typography>
+                                            <Typography variant="body1">
+                                                {chat.message}
+                                                <span className={classes.messageTime}>
+                                                    {new Date().getDate()}
+                                                </span>
+                                            </Typography>
+                                        </span>
                                     </div>
                                 );
                             })
