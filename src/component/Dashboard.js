@@ -1,8 +1,9 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import SendButton from '../images/send.svg';
 
 import { MESSAGE_SENT } from '../Events';
 
@@ -13,7 +14,8 @@ const styles = theme => ({
     container: {
         display: 'flex',
         margin: '0 auto',
-        height: '100vh'
+        // height: '100vh',
+        border: '1xp dashed'
     },
     leftContainer: {
         flex: '1',
@@ -24,10 +26,18 @@ const styles = theme => ({
     },
     rightContainer: {
         flex: '4',
-        margin: '5px',
-        border: '1px #000000 solid'
+        height: '100%',
+        border: '1xp dashed'
     },
-    chatSection: {
+    chatList: {
+        height: 'calc(100vh - 36px)',
+        overflowY: 'auto'
+    },
+    chatSectionSent: {
+        display: 'flex',
+        justifyContent: 'flex-end'
+    },
+    chatSectionReceived: {
         display: 'flex'
     },
     messageUser: {
@@ -42,22 +52,24 @@ const styles = theme => ({
         display: 'inline-block',
         border: '1px solid #bcbab8',
         borderRadius: '4px',
-        padding: '3px',
+        padding: '5px',
         fontSize: '15px',
-        margin: '5px 25px 5px 5px',
+        margin: '5px 60px 5px 5px',
         [theme.breakpoints.down('sm')]: {
             fontSize: '14px',
+            margin: '5px 30px 5px 5px',
         },
     },
     messageSent: {
         display: 'inline-block',
         border: '1px solid #bcbab8',
         borderRadius: '4px',
-        padding: '3px',
+        padding: '5px',
         fontSize: '15px',
-        margin: '5px 5px 5px 25px',
+        margin: '5px 5px 5px 60px',
         [theme.breakpoints.down('sm')]: {
             fontSize: '14px',
+            margin: '5px 5px 5px 30px',
         },
     },
     messageTime: {
@@ -66,25 +78,26 @@ const styles = theme => ({
     },
     messageContainer: {
         display: 'flex',
-        margin: '0',
-        // alignSelf: 'flex-end',
+        height: '35px',
         [theme.breakpoints.down('sm')]: {
             width: '100%',
         },
     },
     messageField: {
         flex: '1',
-        margin: '3px',
         padding: '5px',
-        border: '2px solid red',
+        fontSize: '16px',
+        border: '1px solid red',
         borderRadius: '5px',
-        fontSize: '16px'
     },
     sendButton: {
-        margin: '3px',
-        padding: '5px',
+        backgroundColor: 'transparent',
+        width: '35px',
+        height: 'auto',
+        marginRight: '5px',
+        padding: '2px',
         border: 'none',
-        fontSize: '16px'
+        textAlign: 'center'
     },
 });
 
@@ -102,24 +115,24 @@ const Dashboard = (props) => {
     return (
         <section className={classes.container}>
             <div className={classes.leftContainer}>
-
+                <img src={SendButton} alt="Send" />
             </div>
             <div className={classes.rightContainer}>
-                <Grid container className={classes.chatSection}>
-                    <Grid item xs={12}>
+                <Grid container>
+                    <Grid item xs={12} className={classes.chatList}>
                         {
                             props.chats.map((chat, index) => {
                                 return (
-                                    <div key={index}>
-                                        <span className={classes.messageSent}>
+                                    <div key={index} className={chat.socketId === props.socket.id ? classes.chatSectionSent : classes.chatSectionReceived}>
+                                        <div className={chat.socketId === props.socket.id ? classes.messageSent : classes.messageReceived}>
                                             <Typography variant="body1" className={classes.messageUser}>{chat.user.username}</Typography>
                                             <Typography variant="body1">
                                                 {chat.message}
                                                 <span className={classes.messageTime}>
-                                                    {new Date().getDate()}
+                                                    {new Date(chat.timeStamp).getMinutes()}
                                                 </span>
                                             </Typography>
-                                        </span>
+                                        </div>
                                     </div>
                                 );
                             })
@@ -138,7 +151,7 @@ const Dashboard = (props) => {
                                     setMessage(e.target.value);
                                 }}
                             />
-                            <button type="submit" className={classes.sendButton}>Send</button>
+                            <button type="submit" className={classes.sendButton}><img src={SendButton} alt="Send" /></button>
                         </form>
                     </Grid>
                 </Grid>

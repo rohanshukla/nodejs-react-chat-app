@@ -47,6 +47,7 @@ class Index extends Component {
         });
 
         this.socket.on(MESSAGE_RECEIVED, (data) => {
+            console.log(data);
             this.setState((prevState) => {
                 return {
                     chats: [...prevState.chats, data]

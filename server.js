@@ -37,7 +37,8 @@ io.sockets.on('connection', function (socket) {
 
     //send Message...
     socket.on(MESSAGE_SENT, function (message) {
-        io.sockets.emit(MESSAGE_RECEIVED, { message: message, user: socket.user });
+        const messageData = { message: message, user: socket.user, socketId: socket.id, timeStamp: new Date() };
+        io.sockets.emit(MESSAGE_RECEIVED, messageData);
         console.log({ message: message, user: socket.user });
     });
 
