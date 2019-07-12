@@ -78,7 +78,9 @@ const styles = theme => ({
     },
     messageContainer: {
         display: 'flex',
-        height: '35px',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        height: '45px',
         [theme.breakpoints.down('sm')]: {
             width: '100%',
         },
@@ -87,17 +89,14 @@ const styles = theme => ({
         flex: '1',
         padding: '5px',
         fontSize: '16px',
-        border: '1px solid red',
-        borderRadius: '5px',
+        border: 'none'
     },
     sendButton: {
-        backgroundColor: 'transparent',
-        width: '35px',
         height: 'auto',
-        marginRight: '5px',
-        padding: '2px',
+        padding: '0 10px',
         border: 'none',
-        textAlign: 'center'
+        textAlign: 'center',
+        backgroundColor: 'aliceblue'
     },
 });
 
@@ -151,7 +150,7 @@ const Dashboard = (props) => {
                                     setMessage(e.target.value);
                                 }}
                             />
-                            <button type="submit" className={classes.sendButton}><img src={SendButton} alt="Send" /></button>
+                            <button type="submit" className={classes.sendButton}>{/* <img src={SendButton} alt="Send" /> */}Send</button>
                         </form>
                     </Grid>
                 </Grid>
