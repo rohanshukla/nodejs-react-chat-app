@@ -13,25 +13,37 @@ const styles = theme => ({
     },
     container: {
         display: 'flex',
-        margin: '0 auto',
-        // height: '100vh',
-        border: '1xp dashed'
+        margin: '0 auto'
     },
     leftContainer: {
-        flex: '1',
-        backgroundColor: "#EFEFEF",
+        width: '25%',
+        backgroundColor: theme.palette.secondary.main,
         [theme.breakpoints.down('sm')]: {
             display: 'none'
         },
     },
     rightContainer: {
-        flex: '4',
-        height: '100%',
-        border: '1xp dashed'
+        width: '75%',
+        display: 'flex',
+        flexDirection: 'row',
+        height: '100vh',
+        [theme.breakpoints.down('sm')]: {
+            width: '100%'
+        },
     },
     chatList: {
-        height: 'calc(100vh - 36px)',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        height: 'calc(100vh - 50px)',
+    },
+    messageForm: {
+        width: '75%',
+        // alignSelf: 'flex-end',
+        position: 'fixed',
+        bottom: '0',
+        // left: '0',   
+        [theme.breakpoints.down('sm')]: {
+            width: '100%'
+        },
     },
     chatSectionSent: {
         display: 'flex',
@@ -78,9 +90,9 @@ const styles = theme => ({
     },
     messageContainer: {
         display: 'flex',
-        flexDirection: 'row',
         justifyContent: 'center',
         height: '45px',
+        border: `${theme.palette.secondary.main} 1px solid`,
         [theme.breakpoints.down('sm')]: {
             width: '100%',
         },
@@ -88,15 +100,18 @@ const styles = theme => ({
     messageField: {
         flex: '1',
         padding: '5px',
-        fontSize: '16px',
-        border: 'none'
+        fontSize: '16px'
     },
     sendButton: {
+        width: '45px',
         height: 'auto',
-        padding: '0 10px',
+        padding: '0 5px',
         border: 'none',
         textAlign: 'center',
-        backgroundColor: 'aliceblue'
+        backgroundColor: theme.palette.secondary.main,
+        [theme.breakpoints.down('sm')]: {
+            width: '40px',
+        },
     },
 });
 
@@ -106,8 +121,11 @@ const Dashboard = (props) => {
 
     const onMessageSubmit = (e) => {
         e.preventDefault();
-        props.socket.emit(MESSAGE_SENT, message);
-        setMessage("");
+        console.log(message);
+        if (message !== "") {
+            props.socket.emit(MESSAGE_SENT, message);
+            setMessage("");
+        }
     }
 
     const { classes } = props;
@@ -116,45 +134,44 @@ const Dashboard = (props) => {
             <div className={classes.leftContainer}>
                 <img src={SendButton} alt="Send" />
             </div>
-            <div className={classes.rightContainer}>
-                <Grid container>
-                    <Grid item xs={12} className={classes.chatList}>
-                        {
-                            props.chats.map((chat, index) => {
-                                return (
-                                    <div key={index} className={chat.socketId === props.socket.id ? classes.chatSectionSent : classes.chatSectionReceived}>
-                                        <div className={chat.socketId === props.socket.id ? classes.messageSent : classes.messageReceived}>
-                                            <Typography variant="body1" className={classes.messageUser}>{chat.user.username}</Typography>
-                                            <Typography variant="body1">
-                                                {chat.message}
-                                                <span className={classes.messageTime}>
-                                                    {new Date(chat.timeStamp).getMinutes()}
-                                                </span>
-                                            </Typography>
-                                        </div>
+            <Grid container className={classes.rightContainer}>
+                <Grid item xs={12} className={classes.chatList}>
+                    {
+                        props.chats.map((chat, index) => {
+                            return (
+                                <div key={index} className={chat.socketId === props.socket.id ? classes.chatSectionSent : classes.chatSectionReceived}>
+                                    <div className={chat.socketId === props.socket.id ? classes.messageSent : classes.messageReceived}>
+                                        <Typography variant="body1" className={classes.messageUser}>{chat.socketId === props.socket.id ? 'You' : chat.user.username}</Typography>
+                                        <Typography variant="body1">
+                                            {chat.message}
+                                            <span className={classes.messageTime}>
+                                                {`${new Date(chat.timeStamp).getHours()}:${new Date(chat.timeStamp).getMinutes()}`}
+                                            </span>
+                                        </Typography>
                                     </div>
-                                );
-                            })
-                        }
-                    </Grid>
-                    <Grid item xs={12}>
-                        <form className={classes.messageContainer} onSubmit={onMessageSubmit}>
-                            <input
-                                name="message"
-                                type="text"
-                                variant="outlined"
-                                placeholder="Type a message"
-                                className={classes.messageField}
-                                value={message}
-                                onChange={(e) => {
-                                    setMessage(e.target.value);
-                                }}
-                            />
-                            <button type="submit" className={classes.sendButton}>{/* <img src={SendButton} alt="Send" /> */}Send</button>
-                        </form>
-                    </Grid>
+                                </div>
+                            );
+                        })
+                    }
+                    <span></span>
                 </Grid>
-            </div>
+                <Grid item xs={12} className={classes.messageForm}>
+                    <form className={classes.messageContainer} onSubmit={onMessageSubmit}>
+                        <input
+                            name="message"
+                            type="text"
+                            variant="outlined"
+                            placeholder="Type a message"
+                            className={classes.messageField}
+                            value={message}
+                            onChange={(e) => {
+                                setMessage(e.target.value);
+                            }}
+                        />
+                        <button type="submit" className={classes.sendButton}><img src={SendButton} alt="Send" /></button>
+                    </form>
+                </Grid>
+            </Grid>
         </section >
     )
 }
