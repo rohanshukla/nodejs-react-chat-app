@@ -4,7 +4,7 @@ const app = express();
 const path = require('path');
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
-const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED, ALL_USER } = require('./src/Events');
+const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED, ALL_USER, ALIVE } = require('./src/Events');
 
 var users = [];
 var connections = [];
@@ -24,16 +24,17 @@ app.get('/', function (req, res) {
 
 io.sockets.on('connection', function (socket) {
     connections.push(socket);
-    console.log("Connections : %s sockets Connected", connections.length);
 
     socket.on('disconnect', function (data) {
         //if (!socket.username) return;
         users.splice(users.indexOf(socket.username), 1);
         updateUsernames();
         connections.splice(connections.indexOf(socket), 1);
-        console.log("Disconnected : %s sockets Connected", connections.length);
     });
 
+    socket.on(ALIVE, (data) => {
+        
+    });
 
     //new user...
     socket.on(USER_CONNECTED, function (data) {

@@ -4,7 +4,7 @@ import Dashboard from './Dashboard';
 import Snackbar, { openSnackbar } from './utils/Snackbar';
 
 import io from 'socket.io-client';
-import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT, MESSAGE_RECEIVED, ALL_USER } from '../Events';
+import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT, MESSAGE_RECEIVED, ALL_USER, ALIVE } from '../Events';
 
 const SOCKET_URL = ":5001";
 
@@ -43,6 +43,9 @@ class Index extends Component {
     initSocket = () => {
         this.socket.on('connect', () => {
             console.log(`Connected SocketId - ${this.socket.id}`);
+            setInterval(() => {
+                this.socket.emit(ALIVE, this.socket.id);
+            }, 1500);
         });
 
         this.socket.on(MESSAGE_RECEIVED, (data) => {

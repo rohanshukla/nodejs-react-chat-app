@@ -42,7 +42,7 @@ const styles = theme => ({
         }
     },
     logoText: {
-        color: '#FFFFFF',
+        color: `${theme.palette.secondary.main}`,
         fontSize: '50px',
         fontWeight: '700',
         [theme.breakpoints.down('sm')]: {
@@ -87,7 +87,7 @@ const styles = theme => ({
         color: '#FFFFFF',
         backgroundColor: `${theme.palette.secondary.main}`,
         '&:hover': {
-            color: '#FFFFFF',
+            color: `${theme.palette.secondary.main}`,
             backgroundColor: `${theme.palette.secondary.dark}`
         }
     }
@@ -120,7 +120,7 @@ const Register = (props) => {
                             <div>
                                 {/* <img src={} alt="Logo" className={classes.logoImage}></img> */}
                                 <Typography variant="h5">
-                                    {/* <span className={classes.logoText}>Chat App</span> */}
+                                    <span className={classes.logoText}>Socket IO Chat</span>
                                 </Typography>
                             </div>
                         </div>
