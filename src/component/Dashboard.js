@@ -17,6 +17,7 @@ const styles = theme => ({
     },
     leftContainer: {
         width: '25%',
+        padding: '5px',
         backgroundColor: theme.palette.secondary.main,
         [theme.breakpoints.down('sm')]: {
             display: 'none'
@@ -132,7 +133,13 @@ const Dashboard = (props) => {
     return (
         <section className={classes.container}>
             <div className={classes.leftContainer}>
-                <img src={SendButton} alt="Send" />
+                {
+                    props.users.map((user, index) => {
+                        return (
+                            <span key={index}>{user}</span>
+                        )
+                    })
+                }
             </div>
             <Grid container className={classes.rightContainer}>
                 <Grid item xs={12} className={classes.chatList}>
@@ -141,7 +148,7 @@ const Dashboard = (props) => {
                             return (
                                 <div key={index} className={chat.socketId === props.socket.id ? classes.chatSectionSent : classes.chatSectionReceived}>
                                     <div className={chat.socketId === props.socket.id ? classes.messageSent : classes.messageReceived}>
-                                        <Typography variant="body1" className={classes.messageUser}>{chat.socketId === props.socket.id ? 'You' : chat.user.username}</Typography>
+                                        <Typography variant="body1" className={classes.messageUser}>{chat.socketId === props.socket.id ? 'You' : chat.username}</Typography>
                                         <Typography variant="body1">
                                             {chat.message}
                                             <span className={classes.messageTime}>

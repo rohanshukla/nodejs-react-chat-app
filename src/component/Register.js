@@ -97,13 +97,10 @@ const styles = theme => ({
 const Register = (props) => {
 
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
 
     const inputChangeHandler = (event) => {
         if (event.target.name === 'username') {
             setUsername(event.target.value);
-        } else {
-            setEmail(event.target.value);
         }
     }
 
@@ -127,7 +124,7 @@ const Register = (props) => {
                             <Typography variant="h5" className={classes.headingText}>Register</Typography>
                             <form onSubmit={(e) => {
                                 e.preventDefault();
-                                props.register(username, email);
+                                props.register(username);
                             }}>
                                 <TextField
                                     label="Username"
@@ -136,16 +133,6 @@ const Register = (props) => {
                                     variant="outlined"
                                     className={classes.textField}
                                     value={username}
-                                    onChange={inputChangeHandler}
-                                />
-                                <br />
-                                <TextField
-                                    label="Email"
-                                    name="email"
-                                    type="text"
-                                    variant="outlined"
-                                    className={classes.textField}
-                                    value={email}
                                     onChange={inputChangeHandler}
                                 />
                                 <br />

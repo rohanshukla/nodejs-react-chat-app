@@ -4,7 +4,7 @@ const app = express();
 const path = require('path');
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
-const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED } = require('./src/Events');
+const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED, ALL_USER } = require('./src/Events');
 
 var users = [];
 var connections = [];
@@ -35,24 +35,21 @@ io.sockets.on('connection', function (socket) {
     });
 
 
-    //send Message...
-    socket.on(MESSAGE_SENT, function (message) {
-        const messageData = { message: message, user: socket.user, socketId: socket.id, timeStamp: new Date() };
-        io.sockets.emit(MESSAGE_RECEIVED, messageData);
-        console.log({ message: message, user: socket.user });
-    });
-
-
     //new user...
     socket.on(USER_CONNECTED, function (data) {
-        socket.user = data;
-        users.push(socket.user);
+        socket.username = data;
+        users.push(socket.username);
         updateUsernames();
+    });
+
+    //send Message...
+    socket.on(MESSAGE_SENT, function (message) {
+        const messageData = { message: message, username: socket.username, socketId: socket.id, timeStamp: new Date() };
+        io.sockets.emit(MESSAGE_RECEIVED, messageData);
     });
 
 
     function updateUsernames() {
-        // io.sockets.emit('get users', users);
-        console.log(users);
+        io.sockets.emit(ALL_USER, users);
     }
 });

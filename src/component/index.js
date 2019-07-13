@@ -4,7 +4,7 @@ import Dashboard from './Dashboard';
 import Snackbar, { openSnackbar } from './utils/Snackbar';
 
 import io from 'socket.io-client';
-import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT, MESSAGE_RECEIVED } from '../Events';
+import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT, MESSAGE_RECEIVED, ALL_USER } from '../Events';
 
 const SOCKET_URL = ":5001";
 
@@ -14,25 +14,24 @@ class Index extends Component {
         this.state = {
             socket: null,
             loggedIn: false,
-            chats: []
+            chats: [],
+            users: []
         }
         this.socket = io(SOCKET_URL);
     }
 
-    register = (username, email) => {
+    register = (username) => {
         if (username === '' || username === undefined || username === null) {
             openSnackbar({ message: "Please enter username", variant: "info" });
-        } else if (email === '' || email === undefined || email === null) {
-            openSnackbar({ message: "Please enter password", variant: "info" });
         } else {
-            const user = {
-                username: username,
-                email: email
+            if (this.state.users.includes(username)) {
+                openSnackbar({ message: "Username not available", variant: "info" });
+            } else {
+                this.socket.emit(USER_CONNECTED, username);
+                this.setState({
+                    loggedIn: true
+                });
             }
-            this.socket.emit(USER_CONNECTED, user);
-            this.setState({
-                loggedIn: true
-            });
         }
     }
 
@@ -47,11 +46,17 @@ class Index extends Component {
         });
 
         this.socket.on(MESSAGE_RECEIVED, (data) => {
-            console.log(data);
             this.setState((prevState) => {
                 return {
                     chats: [...prevState.chats, data]
                 }
+            });
+        });
+
+        this.socket.on(ALL_USER, (data) => {
+            console.log("Users", data);
+            this.setState({
+                users: data
             });
         });
     }
@@ -64,7 +69,7 @@ class Index extends Component {
         return (
             <Fragment>
                 <Snackbar />
-                {this.state.loggedIn ? <Dashboard socket={this.socket} chats={this.state.chats} updateMessages={this.updateMessages} /> : <Register register={this.register} socket={this.state.socket} />}
+                {this.state.loggedIn ? <Dashboard socket={this.socket} users={this.state.users} chats={this.state.chats} updateMessages={this.updateMessages} /> : <Register register={this.register} socket={this.state.socket} />}
             </Fragment>
         );
     }
