@@ -54,7 +54,6 @@ class Index extends Component {
         });
 
         this.socket.on(ALL_USER, (data) => {
-            console.log("Users", data);
             this.setState({
                 users: data
             });

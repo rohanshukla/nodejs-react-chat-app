@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useRef, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -16,7 +16,7 @@ const styles = theme => ({
         flexDirection: 'column',
         justifyContent: 'center',
         height: '100vh',
-        backgroundColor: "#000000",
+        backgroundColor: `${theme.palette.primary.main}`,
         textAlign: 'center',
         [theme.breakpoints.down('sm')]: {
             height: '50vh'
@@ -85,10 +85,10 @@ const styles = theme => ({
     button: {
         margin: '10px 0',
         color: '#FFFFFF',
-        backgroundColor: '#ff9933',
+        backgroundColor: `${theme.palette.secondary.main}`,
         '&:hover': {
             color: '#FFFFFF',
-            backgroundColor: '#e67300'
+            backgroundColor: `${theme.palette.secondary.dark}`
         }
     }
 });
@@ -98,11 +98,17 @@ const Register = (props) => {
 
     const [username, setUsername] = useState('');
 
+    const usernameInput = useRef(null);
+
     const inputChangeHandler = (event) => {
         if (event.target.name === 'username') {
             setUsername(event.target.value);
         }
     }
+
+    useEffect(() => {
+        usernameInput.current.focus();
+    }, []);
 
     const { classes } = props;
     return (
@@ -132,6 +138,7 @@ const Register = (props) => {
                                     type="text"
                                     variant="outlined"
                                     className={classes.textField}
+                                    ref={usernameInput}
                                     value={username}
                                     onChange={inputChangeHandler}
                                 />

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import SendButton from '../images/send.svg';
 
-import { MESSAGE_SENT } from '../Events';
+import { MESSAGE_SENT, MESSAGE_RECEIVED } from '../Events';
 
 const styles = theme => ({
     root: {
@@ -18,13 +18,41 @@ const styles = theme => ({
     leftContainer: {
         width: '25%',
         padding: '5px',
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: theme.palette.primary.main,
         [theme.breakpoints.down('sm')]: {
             display: 'none'
         },
     },
+    userContainer: {
+        backgroundColor: '#FFF',
+        border: `2px ${theme.palette.primary.dark} solid`,
+        borderRadius: '5px',
+        padding: '5px',
+        margin: "10px",
+        textAlign: 'center'
+    },
+    userHeader: {
+        margin: '10px 0',
+        fontSize: '30px',
+        fontWeight: '400',
+        [theme.breakpoints.down('sm')]: {
+            fontSize: '25px',
+        },
+        '&::after': {
+            display: 'block',
+            width: '4em',
+            height: '3px',
+            backgroundColor: `${theme.palette.primary.dark}`,
+            content: '" "',
+            margin: '2px auto',
+            borderRadius: '2px'
+        }
+    },
+    users: {
+        fontSize: '16px'
+    },
     rightContainer: {
-        width: '75%',
+        width: '77%',
         display: 'flex',
         flexDirection: 'row',
         height: '100vh',
@@ -41,6 +69,7 @@ const styles = theme => ({
         // alignSelf: 'flex-end',
         position: 'fixed',
         bottom: '0',
+        border: `${theme.palette.primary.main} 1px solid`,
         // left: '0',   
         [theme.breakpoints.down('sm')]: {
             width: '100%'
@@ -64,6 +93,7 @@ const styles = theme => ({
     messageReceived: {
         display: 'inline-block',
         border: '1px solid #bcbab8',
+        backgroundColor: `${theme.palette.secondary.dark}`,
         borderRadius: '4px',
         padding: '5px',
         fontSize: '15px',
@@ -75,6 +105,7 @@ const styles = theme => ({
     },
     messageSent: {
         display: 'inline-block',
+        backgroundColor: `${theme.palette.secondary.light}`,
         border: '1px solid #bcbab8',
         borderRadius: '4px',
         padding: '5px',
@@ -93,7 +124,6 @@ const styles = theme => ({
         display: 'flex',
         justifyContent: 'center',
         height: '45px',
-        border: `${theme.palette.secondary.main} 1px solid`,
         [theme.breakpoints.down('sm')]: {
             width: '100%',
         },
@@ -109,7 +139,7 @@ const styles = theme => ({
         padding: '0 5px',
         border: 'none',
         textAlign: 'center',
-        backgroundColor: theme.palette.secondary.main,
+        backgroundColor: theme.palette.primary.main,
         [theme.breakpoints.down('sm')]: {
             width: '40px',
         },
@@ -120,26 +150,44 @@ const Dashboard = (props) => {
 
     const [message, setMessage] = useState('');
 
+    const messageInput = useRef(null);
+    const newMessage = useRef(null);
+
     const onMessageSubmit = (e) => {
         e.preventDefault();
-        console.log(message);
         if (message !== "") {
             props.socket.emit(MESSAGE_SENT, message);
             setMessage("");
         }
     }
 
+    props.socket.on(MESSAGE_RECEIVED, () => {
+        window.location.hash = "#newMessage";
+        messageInput.current.focus();
+    })
+
+    useEffect(() => {
+        messageInput.current.focus();
+    }, []);
+
     const { classes } = props;
     return (
         <section className={classes.container}>
             <div className={classes.leftContainer}>
-                {
-                    props.users.map((user, index) => {
-                        return (
-                            <span key={index}>{user}</span>
-                        )
-                    })
-                }
+                <div className={classes.userContainer}>
+                    <Typography variant="h5" className={classes.userHeader}>{`Online Users : ${props.users.length}`}</Typography>
+                    {
+                        props.users.map((user, index) => {
+                            return (
+                                <div key={index}>
+                                    <Typography variant="body1" className={classes.users}>
+                                        {user}
+                                    </Typography>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
             </div>
             <Grid container className={classes.rightContainer}>
                 <Grid item xs={12} className={classes.chatList}>
@@ -160,7 +208,7 @@ const Dashboard = (props) => {
                             );
                         })
                     }
-                    <span></span>
+                    <div id="newMessage" style={{ height: '1px' }}></div>
                 </Grid>
                 <Grid item xs={12} className={classes.messageForm}>
                     <form className={classes.messageContainer} onSubmit={onMessageSubmit}>
@@ -170,6 +218,7 @@ const Dashboard = (props) => {
                             variant="outlined"
                             placeholder="Type a message"
                             className={classes.messageField}
+                            ref={messageInput}
                             value={message}
                             onChange={(e) => {
                                 setMessage(e.target.value);
