@@ -4,7 +4,7 @@ const app = express();
 const path = require('path');
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
-const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED, ALL_USER, ALIVE } = require('./src/Events');
+const { MESSAGE_SENT, MESSAGE_RECEIVED, USER_CONNECTED, USER_DISCONNECTED, ALL_USER, ALIVE, TYPING, USER_TYPING } = require('./src/Events');
 
 var users = [];
 var connections = [];
@@ -33,7 +33,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on(ALIVE, (data) => {
-        
+
     });
 
     //new user...
@@ -41,6 +41,14 @@ io.sockets.on('connection', function (socket) {
         socket.username = data;
         users.push(socket.username);
         updateUsernames();
+    });
+
+    socket.on(TYPING, (typing) => {
+        const socketObject = {
+            user: socket.username,
+            socketId: socket.id
+        }
+        io.sockets.emit(USER_TYPING, typing, socketObject);
     });
 
     //send Message...

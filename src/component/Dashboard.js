@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import SendButton from '../images/send.svg';
 
-import { MESSAGE_SENT, MESSAGE_RECEIVED } from '../Events';
+import { MESSAGE_SENT, MESSAGE_RECEIVED, TYPING, USER_TYPING } from '../Events';
 
 const styles = theme => ({
     root: {
@@ -61,12 +61,21 @@ const styles = theme => ({
         },
     },
     chatNavbar: {
+        paddingLeft: '10px',
         alignSelf: 'flex-start',
+        display: 'flex',
+        alignItems: 'center',
         backgroundColor: '#EFEFEF',
         height: '45px',
         [theme.breakpoints.down('sm')]: {
             width: '100%',
         },
+    },
+    chatNavbarText: {
+
+    },
+    typing: {
+        fontSize: '12px',
     },
     chatList: {
         overflowY: 'auto',
@@ -152,9 +161,13 @@ const styles = theme => ({
     },
 });
 
+const WAIT_INTERVAL = 1000;
+var typingTimeOut = null;
+
 const Dashboard = (props) => {
 
     const [message, setMessage] = useState('');
+    const [typing, setTyping] = useState('');
 
     const messageInput = useRef(null);
     const newMessage = useRef(null);
@@ -168,13 +181,33 @@ const Dashboard = (props) => {
     }
 
     props.socket.on(MESSAGE_RECEIVED, () => {
+        setTyping("");
         newMessage.current.scrollIntoView({ behavir: 'smooth' });
         messageInput.current.focus();
-    })
+    });
+
+    props.socket.on(USER_TYPING, (typing, obj) => {
+        if (typing) {
+            if (props.socket.id !== obj.socketId) {
+                setTyping(`${obj.user} is typing...`);
+            }
+        } else {
+            setTyping("");
+        }
+    });
 
     useEffect(() => {
         messageInput.current.focus();
     }, []);
+
+    const onMessageTyping = (e) => {
+        props.socket.emit(TYPING, true);
+        setMessage(e.target.value);
+        clearTimeout(typingTimeOut);
+        typingTimeOut = setTimeout(() => {
+            props.socket.emit(TYPING, false);
+        }, WAIT_INTERVAL);
+    }
 
     const { classes } = props;
     return (
@@ -196,10 +229,17 @@ const Dashboard = (props) => {
                 </div>
             </div>
             <Grid container className={classes.rightContainer}>
-                <Grid xs={12} className={classes.chatNavbar}>
-                    <Typography>
-
+                <Grid item xs={12} className={classes.chatNavbar}>
+                    <div>
+                        <Typography variant="body1">
+                            Socket IO Chat
                     </Typography>
+                        {typing ?
+                            <span className={classes.typing}>
+                                {typing}
+                            </span>
+                            : null}
+                    </div>
                 </Grid>
                 <Grid item xs={12} className={classes.chatList}>
                     {
@@ -231,9 +271,7 @@ const Dashboard = (props) => {
                             className={classes.messageField}
                             ref={messageInput}
                             value={message}
-                            onChange={(e) => {
-                                setMessage(e.target.value);
-                            }}
+                            onChange={onMessageTyping}
                         />
                         <button type="submit" className={classes.sendButton}><img src={SendButton} alt="Send" /></button>
                     </form>
