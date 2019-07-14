@@ -60,15 +60,21 @@ const styles = theme => ({
             width: '100%'
         },
     },
+    chatNavbar: {
+        alignSelf: 'flex-start',
+        backgroundColor: '#EFEFEF',
+        height: '45px',
+        [theme.breakpoints.down('sm')]: {
+            width: '100%',
+        },
+    },
     chatList: {
         overflowY: 'auto',
-        height: 'calc(100vh - 50px)',
+        height: 'calc(100% - 100px)'
     },
     messageForm: {
         width: '75%',
-        // alignSelf: 'flex-end',
-        position: 'fixed',
-        bottom: '0',
+        alignSelf: 'flex-end',
         border: `${theme.palette.primary.main} 1px solid`,
         // left: '0',   
         [theme.breakpoints.down('sm')]: {
@@ -162,7 +168,6 @@ const Dashboard = (props) => {
     }
 
     props.socket.on(MESSAGE_RECEIVED, () => {
-        // window.location.hash = "#newMessage";
         newMessage.current.scrollIntoView({ behavir: 'smooth' });
         messageInput.current.focus();
     })
@@ -191,6 +196,11 @@ const Dashboard = (props) => {
                 </div>
             </div>
             <Grid container className={classes.rightContainer}>
+                <Grid xs={12} className={classes.chatNavbar}>
+                    <Typography>
+
+                    </Typography>
+                </Grid>
                 <Grid item xs={12} className={classes.chatList}>
                     {
                         props.chats.map((chat, index) => {
