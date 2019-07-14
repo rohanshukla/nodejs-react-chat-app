@@ -65,14 +65,15 @@ const styles = theme => ({
         alignSelf: 'flex-start',
         display: 'flex',
         alignItems: 'center',
-        backgroundColor: '#EFEFEF',
+        backgroundColor: `${theme.palette.primary.light}`,
         height: '45px',
         [theme.breakpoints.down('sm')]: {
             width: '100%',
         },
     },
     chatNavbarText: {
-
+        fontSize: '16px',
+        fontWeight: '700'
     },
     typing: {
         fontSize: '12px',
@@ -231,7 +232,7 @@ const Dashboard = (props) => {
             <Grid container className={classes.rightContainer}>
                 <Grid item xs={12} className={classes.chatNavbar}>
                     <div>
-                        <Typography variant="body1">
+                        <Typography variant="body1" className={classes.chatNavbarText}>
                             Socket IO Chat
                     </Typography>
                         {typing ?
