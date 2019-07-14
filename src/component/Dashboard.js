@@ -54,7 +54,7 @@ const styles = theme => ({
     rightContainer: {
         width: '77%',
         display: 'flex',
-        flexDirection: 'row',
+        // flexDirection: 'row',
         height: '100vh',
         [theme.breakpoints.down('sm')]: {
             width: '100%'
@@ -162,7 +162,8 @@ const Dashboard = (props) => {
     }
 
     props.socket.on(MESSAGE_RECEIVED, () => {
-        window.location.hash = "#newMessage";
+        // window.location.hash = "#newMessage";
+        newMessage.current.scrollIntoView({ behavir: 'smooth' });
         messageInput.current.focus();
     })
 
@@ -208,7 +209,7 @@ const Dashboard = (props) => {
                             );
                         })
                     }
-                    <div id="newMessage" style={{ height: '1px' }}></div>
+                    <div id="newMessage" style={{ height: '1px' }} ref={newMessage}></div>
                 </Grid>
                 <Grid item xs={12} className={classes.messageForm}>
                     <form className={classes.messageContainer} onSubmit={onMessageSubmit}>
