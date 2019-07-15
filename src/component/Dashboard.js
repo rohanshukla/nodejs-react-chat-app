@@ -183,7 +183,7 @@ const Dashboard = (props) => {
 
     props.socket.on(MESSAGE_RECEIVED, () => {
         setTyping("");
-        newMessage.current.scrollIntoView({ behavir: 'smooth' });
+        newMessage.current.scrollIntoView({ behavior: 'smooth' });
         messageInput.current.focus();
     });
 
