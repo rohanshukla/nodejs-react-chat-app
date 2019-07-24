@@ -6,7 +6,8 @@ import Snackbar, { openSnackbar } from './utils/Snackbar';
 import io from 'socket.io-client';
 import { USER_CONNECTED, USER_DISCONNECTED, LOGOUT, MESSAGE_RECEIVED, ALL_USER, ALIVE } from '../Events';
 
-const SOCKET_URL = ":5001";
+// const SOCKET_URL = ":5001";
+const SOCKET_URL = "socket-nodejs-chat.herokuapp.com";
 
 class Index extends Component {
     constructor(props) {
